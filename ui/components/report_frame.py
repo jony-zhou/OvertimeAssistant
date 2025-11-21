@@ -50,6 +50,15 @@ class ReportFrame(ctk.CTkFrame):
         )
         self.refresh_button.pack(side="left", padx=5)
         
+        # 複製按鈕
+        self.copy_button = ctk.CTkButton(
+            button_container,
+            text="📋 複製總時數",
+            command=self.copy_total_hours,
+            width=120
+        )
+        self.copy_button.pack(side="left", padx=5)
+        
         # 匯出按鈕
         self.export_button = ctk.CTkButton(
             button_container,
@@ -113,12 +122,21 @@ class ReportFrame(ctk.CTkFrame):
             else:
                 self.tree.column(col, width=120, anchor="center")
         
+        # 綁定右鍵選單
+        self.tree.bind("<Button-3>", self._show_context_menu)
+        self.tree.bind("<Control-c>", lambda e: self._copy_overtime_hours())
+        
         # 捲軸
         scrollbar = ttk.Scrollbar(parent, orient="vertical", command=self.tree.yview)
         self.tree.configure(yscrollcommand=scrollbar.set)
         
         self.tree.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
+        
+        # 建立右鍵選單
+        self.context_menu = tk.Menu(self.tree, tearoff=0)
+        self.context_menu.add_command(label="複製加班時數", command=self._copy_overtime_hours)
+        self.context_menu.add_command(label="複製所有加班時數", command=self._copy_all_overtime_hours)
     
     def display_report(self, report: OvertimeReport):
         """顯示報表"""
@@ -152,3 +170,86 @@ class ReportFrame(ctk.CTkFrame):
             stats_text += f"  ({summary['最長加班日期']})"
         
         self.stats_label.configure(text=stats_text)
+    
+    def copy_total_hours(self):
+        """複製總加班時數到剪貼簿"""
+        if not self.current_report:
+            return
+        
+        total_hours = self.current_report.total_overtime_hours
+        
+        # 複製到剪貼簿
+        self.clipboard_clear()
+        self.clipboard_append(f"{total_hours:.1f}")
+        
+        # 顯示提示
+        self._show_copy_notification(f"已複製: {total_hours:.1f} 小時")
+    
+    def _show_context_menu(self, event):
+        """顯示右鍵選單"""
+        # 選擇點擊的行
+        item = self.tree.identify_row(event.y)
+        if item:
+            self.tree.selection_set(item)
+        
+        # 顯示選單
+        try:
+            self.context_menu.tk_popup(event.x_root, event.y_root)
+        finally:
+            self.context_menu.grab_release()
+    
+    def _copy_overtime_hours(self):
+        """複製選中行的加班時數"""
+        selection = self.tree.selection()
+        if not selection:
+            return
+        
+        # 只取加班時數欄位 (第5欄,索引4)
+        overtime_hours = []
+        for item in selection:
+            values = self.tree.item(item)['values']
+            overtime_hours.append(str(values[4]))  # 加班時數是第5欄
+        
+        # 每行一個數字
+        data = "\n".join(overtime_hours)
+        
+        # 複製到剪貼簿
+        self.clipboard_clear()
+        self.clipboard_append(data)
+        
+        count = len(selection)
+        self._show_copy_notification(f"已複製 {count} 筆加班時數")
+    
+    def _copy_all_overtime_hours(self):
+        """複製所有加班時數"""
+        # 只取加班時數欄位
+        overtime_hours = []
+        for item in self.tree.get_children():
+            values = self.tree.item(item)['values']
+            overtime_hours.append(str(values[4]))  # 加班時數是第5欄
+        
+        # 每行一個數字
+        data = "\n".join(overtime_hours)
+        
+        # 複製到剪貼簿
+        self.clipboard_clear()
+        self.clipboard_append(data)
+        
+        count = len(self.tree.get_children())
+        self._show_copy_notification(f"已複製全部 {count} 筆加班時數")
+    
+    def _show_copy_notification(self, message: str):
+        """顯示複製通知"""
+        # 建立臨時標籤顯示提示
+        notification = ctk.CTkLabel(
+            self,
+            text=message,
+            font=ctk.CTkFont(size=12),
+            text_color="#2ecc71",
+            fg_color="#1e1e1e",
+            corner_radius=5
+        )
+        notification.place(relx=0.5, rely=0.5, anchor="center")
+        
+        # 1秒後自動消失
+        self.after(1000, notification.destroy)

@@ -73,6 +73,22 @@ class MainWindow(ctk.CTk):
             on_export=self.on_export,
             on_refresh=self.on_refresh
         )
+        
+        # 底部容器 (用於放置登出按鈕)
+        self.bottom_container = ctk.CTkFrame(self.main_container, fg_color="transparent")
+        
+        # 登出按鈕 (初始隱藏,放在底部容器中)
+        self.logout_button = ctk.CTkButton(
+            self.bottom_container,
+            text="🚪 登出",
+            command=self.on_logout,
+            width=150,
+            height=40,
+            fg_color="#e74c3c",
+            hover_color="#c0392b",
+            font=ctk.CTkFont(size=14)
+        )
+        self.logout_button.pack(pady=15)
     
     def on_login(self, username: str, password: str):
         """登入處理"""
@@ -154,8 +170,11 @@ class MainWindow(ctk.CTk):
             )
             
             # 顯示報表
-            self.report_frame.pack(fill="both", expand=True, padx=20, pady=10)
+            self.report_frame.pack(fill="both", expand=True, padx=20, pady=(10, 5))
             self.report_frame.display_report(report)
+            
+            # 顯示登出按鈕在最下方
+            self.bottom_container.pack(fill="x", padx=20, pady=(0, 10))
         else:
             error_msg = f"✗ {error}" if error else "✗ 抓取資料失敗"
             self.status_frame.show_status(error_msg, "error")
@@ -197,6 +216,25 @@ class MainWindow(ctk.CTk):
         """重新整理資料"""
         if self.data_service:
             self.report_frame.pack_forget()
+            self.bottom_container.pack_forget()
             self.fetch_data()
         else:
             self.status_frame.show_status("請先登入", "error")
+    
+    def on_logout(self):
+        """登出處理"""
+        # 清理資料
+        self.auth_service = None
+        self.data_service = None
+        self.current_report = None
+        
+        # 重置 UI
+        self.report_frame.pack_forget()
+        self.bottom_container.pack_forget()
+        self.login_frame.pack(fill="x", padx=20, pady=10)
+        
+        # 清空登入框的密碼欄位
+        self.login_frame.password_entry.delete(0, 'end')
+        
+        # 顯示訊息
+        self.status_frame.show_status("已登出", "info")
