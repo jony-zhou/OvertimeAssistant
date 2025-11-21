@@ -7,8 +7,8 @@ from typing import Tuple
 
 
 # 當前版本號
-VERSION = "0.1.0"
-VERSION_NAME = "GUI 重構版"
+VERSION = "1.0.0"
+VERSION_NAME = "首個正式版"
 
 
 @dataclass(frozen=True)
