@@ -20,7 +20,7 @@ class Settings:
     
     # 加班補報設定
     DEFAULT_OVERTIME_DESCRIPTION: str = "加班作業"
-    ENABLE_SUBMISSION: bool = False  # Beta 版本預設禁用送出功能
+    ENABLE_SUBMISSION: bool = True  # Beta 版本預設禁用送出功能
     
     # 日期格式
     DATE_FORMAT: str = "%Y/%m/%d"
