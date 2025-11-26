@@ -166,7 +166,8 @@ class TestOvertimeReportConversion:
         record1 = submission_records[0]
         assert record1.date == "2024/11/25"
         assert record1.overtime_hours == 2.5
-        assert record1.description == "加班作業"
+        # 新功能：加班內容為空（必須由使用者填寫）
+        assert record1.description == ""
         assert record1.is_overtime is True
         assert record1.is_selected is True
         
@@ -175,13 +176,12 @@ class TestOvertimeReportConversion:
         assert record2.date == "2024/11/27"
         assert record2.overtime_hours == 3.5
     
-    def test_to_submission_records_custom_description(self, sample_report):
-        """測試自訂描述"""
-        submission_records = sample_report.to_submission_records(
-            default_description="專案開發"
-        )
+    def test_to_submission_records_empty_description(self, sample_report):
+        """測試預設空描述（新功能：必須由使用者填寫）"""
+        submission_records = sample_report.to_submission_records()
         
-        assert all(r.description == "專案開發" for r in submission_records)
+        # 所有記錄的描述都應該是空的
+        assert all(r.description == "" for r in submission_records)
     
     def test_to_submission_records_empty_report(self):
         """測試空報表"""
