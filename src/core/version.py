@@ -8,7 +8,7 @@ from typing import Tuple
 
 
 # 當前版本號
-VERSION = "1.1.1"
+VERSION = "1.2.0"
 VERSION_NAME = "修正icon解析度調整至128x128"
 
 
