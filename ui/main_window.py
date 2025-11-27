@@ -3,18 +3,15 @@
 遵循 SOLID、DRY、KISS、YAGNI 原則
 """
 
-import customtkinter as ctk
-from tkinter import messagebox as mb
-from typing import Optional
+import sys
 import threading
 import logging
-import sys
+from tkinter import messagebox as mb
+from typing import Optional
 from pathlib import Path
 from datetime import datetime
-
-# 加入專案根目錄到路徑
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
+from PIL import Image, ImageTk
+import customtkinter as ctk
 from src.models import OvertimeReport
 from src.models.personal_record import PersonalRecord, PersonalRecordSummary
 from src.services import AuthService, DataService, ExportService, UpdateService
@@ -24,7 +21,6 @@ from src.core import OvertimeCalculator, VERSION
 from src.config import Settings
 from ui.components import (
     LoginFrame,
-    ReportFrame,
     show_update_dialog,
     OvertimeReportTab,
     AttendanceTab,
@@ -39,6 +35,9 @@ from ui.config import (
     default_styles,
     get_font_config,
 )
+
+# 加入專案根目錄到路徑
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +61,14 @@ class MainWindow(ctk.CTk):
         self.card_avg_hours: Optional[StatisticsCard] = None
         self.card_max_hours: Optional[StatisticsCard] = None
         self.card_unreported: Optional[StatisticsCard] = None
+        
+        self.auth_service = None
+        self.data_service = None
+        self.personal_record_service = None
+        self.current_report = None
+        self.personal_records = []
+        self.personal_summary = None
+        self._login_password = None  # 清除密碼
 
         # 初始化屬性
         self.version = VERSION
@@ -96,8 +103,6 @@ class MainWindow(ctk.CTk):
             if icon_ico.exists():
                 self.iconbitmap(str(icon_ico))
             elif icon_png.exists():
-                # iconphoto 需要使用 PhotoImage (Tkinter 原生)
-                from PIL import Image, ImageTk
 
                 icon_image = Image.open(str(icon_png))
                 photo = ImageTk.PhotoImage(icon_image)
@@ -784,13 +789,6 @@ class MainWindow(ctk.CTk):
         注意: 不清除儲存的憑證,僅清除記憶體中的資料
         使用者下次登入時仍可使用記住我功能
         """
-        self.auth_service = None
-        self.data_service = None
-        self.personal_record_service = None
-        self.current_report = None
-        self.personal_records = []
-        self.personal_summary = None
-        self._login_password = None  # 清除密碼
 
         # 清空個人記錄分頁
         if hasattr(self, "personal_record_tab"):
