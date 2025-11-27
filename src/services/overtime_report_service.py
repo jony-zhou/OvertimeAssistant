@@ -1,9 +1,9 @@
 """加班補報表單填寫服務"""
 
-import requests
-from bs4 import BeautifulSoup
 import logging
 from typing import List, Dict, Any, Optional
+import requests
+from bs4 import BeautifulSoup
 import urllib3
 
 from ..config import Settings
