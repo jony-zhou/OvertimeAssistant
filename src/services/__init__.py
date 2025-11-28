@@ -7,6 +7,7 @@ from .update_service import UpdateService
 from .overtime_status_service import OvertimeStatusService
 from .overtime_report_service import OvertimeReportService
 from .personal_record_service import PersonalRecordService
+from .template_manager import TemplateManager
 
 __all__ = [
     "AuthService",
@@ -16,4 +17,5 @@ __all__ = [
     "OvertimeStatusService",
     "OvertimeReportService",
     "PersonalRecordService",
+    "TemplateManager",
 ]
