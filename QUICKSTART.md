@@ -24,8 +24,13 @@ python app.py
 
 1. **登入**: 輸入 SSP 帳號和密碼
 2. **等待**: 系統自動抓取出勤資料並計算加班時數
-3. **查看報表**: 檢視出勤記錄和統計資訊
-4. **匯出**: 點擊「匯出 Excel」按鈕儲存報表
+3. **加班補報**: 預設停留在「⚙️ 加班補報」分頁
+	- 勾選要申請的記錄 (已申請會自動鎖定)
+	- 直接編輯「加班內容」及「加班時數」
+	- 透過工具列的「套用範本」快速填入常用描述
+4. **送出申請**: 按下「✓ 送出申請」即可提交至 SSP 系統
+5. **查看異常**: 切換至「📅 異常清單」檢視出勤明細與統計
+6. **匯出報表**: 任一分頁皆可使用「匯出 Excel」功能
 
 ## 4. 開發者指南
 
@@ -48,8 +53,7 @@ python app.py
 # 快速打包 (增量)
 .\venv\Scripts\python.exe -m PyInstaller overtime_calculator.spec
 ```
-
-執行檔位於 `dist/overtime-assistant-1.0.1.exe`
+執行檔位於 `dist/overtime-assistant-1.2.0.exe`
 
 ### 圖示檔案
 
@@ -87,8 +91,16 @@ WORK_HOURS = 480        # 正常工時 (分鐘)
 REST_TIME = 30          # 休息時間 (分鐘)
 MAX_OVERTIME_HOURS = 4  # 最大加班時數
 STANDARD_START_HOUR = 9 # 標準上班時間
+DEFAULT_OVERTIME_DESCRIPTION = "加班作業"
+OVERTIME_DESCRIPTION_TEMPLATES = (
+    "加班作業",
+    "系統維護",
+    "專案開發",
+    "客戶支援",
+)
 ```
 
+> **技巧**: 可自行調整 `OVERTIME_DESCRIPTION_TEMPLATES`, 或在介面內點選「管理範本」即時編輯, 範本會顯示於「套用範本」選單中方便套用。
 ## 7. 常見問題
 
 ### Q: GUI 無法啟動?
@@ -111,5 +123,7 @@ A: 這是正常的,因為包含了 Python 環境和所有依賴
 
 ## 9. 版本資訊
 
-- **v2.0**: 全新 GUI 版本,模組化架構
+- **v1.2.0**: 加班補報自動填寫、加班內容範本選單、UI 分頁化
+- **v1.1.x**: 圖示優化與 UI 改版
+- **v1.0.x**: 初版 GUI 應用程式
 - **v1.x**: 舊版 CLI (main.py)
