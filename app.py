@@ -12,7 +12,7 @@ def main():
     """主程式入口"""
     # 設定日誌
     setup_logging()
-    
+
     # 啟動 GUI
     app = MainWindow()
     app.mainloop()
