@@ -85,7 +85,9 @@
   - `OVERTIME_REPORT_URL` = "/FW21001Z.aspx?Kind=B"
   - `OVERTIME_STATUS_URL` = "/FW21003Z.aspx"
   - `DEFAULT_OVERTIME_DESCRIPTION` = "加班作業"
-- [ ] 5.2 新增加班內容範本設定 (可選)
+- [x] 5.2 新增加班內容範本設定
+  - [x] 5.2.1 建立範本儲存檔案與預設值
+  - [x] 5.2.2 實作範本管理服務 (讀寫、清理)
 
 ## 6. 測試 (Tests)
 
@@ -103,6 +105,9 @@
   - 測試分頁切換
   - 測試記錄勾選
   - 測試預覽功能
+- [x] 6.5 範本管理測試
+  - 測試範本儲存與載入
+  - 測試 UI 範本套用流程
 
 ## 7. 文件更新 (Documentation)
 
